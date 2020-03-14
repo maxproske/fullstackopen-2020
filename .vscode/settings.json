@@ -1,0 +1,12 @@
+{
+  // Prevent default behaviour
+  "editor.formatOnSave": false,
+  // Save files on focus change
+  "files.autoSave": "onFocusChange",
+  // Enable status popup in bottom right corner
+  "eslint.alwaysShowStatus": true,
+  // Run ESLint upon saving JavaScript files
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+}
