@@ -1,20 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
 
-const App = ({count}) =>  {
+const App = () =>  {
+    const [ counter, setCounter ] = useState(0)
+
+    console.log(`re-rendering ${counter}`)
+    
     return (
         <div>
-            <h1>{count}</h1>
+            <h1>{counter}</h1>
         </div>
     )
 }
 
-let count = 1;
-
-ReactDOM.render(<App count={count} />, document.getElementById('root'));
-
-count++;
-ReactDOM.render(<App count={count} />, document.getElementById('root'));
-
-count++;
-ReactDOM.render(<App count={count} />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'))
