@@ -1,16 +1,19 @@
-import React, {useState} from 'react';
-import ReactDOM from 'react-dom';
+import React, { useState } from 'react'
+import ReactDOM from 'react-dom'
+import Display from './Display'
+import Button from './Button'
 
-const App = () =>  {
-    const [ counter, setCounter ] = useState(0)
+const App = () => {
+  const [counter, setCounter] = useState(0)
 
-    console.log(`re-rendering ${counter}`)
-    
-    return (
-        <div>
-            <h1>{counter}</h1>
-        </div>
-    )
+  const increaseByOne = () => setCounter(counter + 1)
+
+  return (
+    <div>
+      <Display counter={counter} />
+      <Button handleClick={increaseByOne} text="plus" />
+    </div>
+  )
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))
