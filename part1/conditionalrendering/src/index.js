@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
+import History from './History'
 
 const App = (props) => {
   const [left, setLeft] = useState(0)
   const [right, setRight] = useState(0)
   const [allClicks, setAllClicks] = useState([])
 
-  const handleLeftClick = () => {
-    setAllClicks(allClicks.concat('L'))
+  const handleLeftClick = (char) => () => {
+    setAllClicks(allClicks.concat(char))
     setLeft(left + 1)
   }
 
@@ -16,16 +17,16 @@ const App = (props) => {
     setRight(right + 1)
   }
 
-  console.log(allClicks)
+  const bad = (props) => <h1>Test</h1>
 
   return (
     <div>
       <div>
         {left}
-        <button onClick={handleLeftClick}>left</button>
+        <button onClick={handleLeftClick('L')}>left</button>
         <button onClick={handleRightClick}>right</button>
         {right}
-        <p>{allClicks.join(' ')}</p>
+        <History allClicks={allClicks} />
       </div>
     </div>
   )
