@@ -1,14 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
-const Numbers = ({ persons }) => {
+import personService from './services/persons'
+
+const Numbers = ({ persons, handleDeleteClick }) => {
+  console.log(persons)
   return (
     <article>
       <h2>Numbers</h2>
       {persons.length && (
         <ul>
           {persons.map((person) => (
-            <li key={person.name}>{person.name}</li>
+            <li key={person.name}>
+              {person.name} {person.phone}{' '}
+              <button onClick={() => window.confirm() && handleDeleteClick(person.id)}>delete</button>
+            </li>
           ))}
         </ul>
       )}
@@ -17,9 +23,15 @@ const Numbers = ({ persons }) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: 'Arto Hellas' }])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
+
+  useEffect(() => {
+    personService.getAll().then((response) => {
+      setPersons(response.data)
+    })
+  }, [])
 
   const handleNameChange = (e) => {
     setNewName(e.target.value)
@@ -32,6 +44,7 @@ const App = () => {
   const addPerson = (e) => {
     e.preventDefault()
 
+    let newId = 1
     for (let i = 0; i < persons.length; i++) {
       if (persons[i].name === newName) {
         alert(`${newName} already exists in the phone book!`)
@@ -41,11 +54,27 @@ const App = () => {
         alert(`${newPhone} already exists in the phone book!`)
         return
       }
+      if (persons[i].id > newId) {
+        newId = persons[i].id + 1
+      }
     }
 
-    setPersons(persons.concat({ name: newName, phone: newPhone }))
+    const newPerson = {
+      id: newId,
+      name: newName,
+      phone: newPhone,
+    }
+    personService.create(newPerson)
+
+    setPersons(persons.concat(newPerson))
     setNewName('')
     setNewPhone('')
+  }
+
+  const handleDeleteClick = (id) => {
+    personService.remove(id).then(() => {
+      setPersons(persons.filter((person) => person.id !== id))
+    })
   }
 
   return (
@@ -62,7 +91,7 @@ const App = () => {
           <button disabled={!newName.length || !newPhone.length}>add</button>
         </div>
       </form>
-      <Numbers persons={persons} />
+      <Numbers persons={persons} handleDeleteClick={handleDeleteClick} />
     </div>
   )
 }
