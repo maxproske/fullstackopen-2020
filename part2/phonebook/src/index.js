@@ -8,12 +8,12 @@ const Numbers = ({ persons, handleDeleteClick }) => {
   return (
     <article>
       <h2>Numbers</h2>
-      {persons.length && (
+      {persons.length > 0 && (
         <ul>
           {persons.map((person) => (
-            <li key={person.name}>
+            <li key={person.id}>
               {person.name} {person.phone}{' '}
-              <button onClick={() => window.confirm() && handleDeleteClick(person.id)}>delete</button>
+              <button onClick={() => window.confirm('Are you sure?') && handleDeleteClick(person.id)}>delete</button>
             </li>
           ))}
         </ul>
@@ -51,10 +51,12 @@ const App = () => {
         return
       }
       if (persons[i].phone === newPhone) {
-        alert(`${newPhone} already exists in the phone book!`)
+        personService.update(persons[i].id, { ...persons[i], name: newName }).then((response) => {
+          setPersons(persons.map((person) => (person.id !== persons[i].id ? person : response.data)))
+        })
         return
       }
-      if (persons[i].id > newId) {
+      if (persons[i].id >= newId) {
         newId = persons[i].id + 1
       }
     }
