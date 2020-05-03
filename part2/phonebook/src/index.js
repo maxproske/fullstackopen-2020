@@ -3,6 +3,24 @@ import ReactDOM from 'react-dom'
 
 import personService from './services/persons'
 
+const Notification = ({ message }) => {
+  const style = {
+    color: 'white',
+    fontStyle: 'italic',
+    width: '100%',
+    padding: '1rem',
+    fontSize: 16,
+    backgroundColor: 'grey',
+  }
+  return (
+    message && (
+      <div style={style} className="error">
+        {message}
+      </div>
+    )
+  )
+}
+
 const Numbers = ({ persons, handleDeleteClick }) => {
   console.log(persons)
   return (
@@ -26,6 +44,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService.getAll().then((response) => {
@@ -66,7 +85,12 @@ const App = () => {
       name: newName,
       phone: newPhone,
     }
-    personService.create(newPerson)
+    personService.create(newPerson).then(() => {
+      setErrorMessage(`Added ${newPerson.name} to the phone book!`)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+    })
 
     setPersons(persons.concat(newPerson))
     setNewName('')
@@ -82,6 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <form onSubmit={addPerson}>
         <div>
           name: <input value={newName} onChange={handleNameChange} required />
