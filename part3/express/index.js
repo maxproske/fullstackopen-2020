@@ -4,12 +4,18 @@ const cors = require('cors')
 
 const app = express()
 
+// Crors middleware
 app.use(cors())
+
+// JSON parser middleware
 app.use(express.json())
 
+// Logging middleware
 morgan.token('body', (req) => Object.keys(req.body).length && JSON.stringify(req.body))
-
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
+// React client
+app.use(express.static('build'))
 
 let persons = [
   {
