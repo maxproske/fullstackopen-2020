@@ -1,73 +1,99 @@
 const express = require('express')
 const app = express()
+
 app.use(express.json())
 
-let notes = [
+let persons = [
   {
     id: 1,
-    content: 'HTML is easy',
-    date: '2019-05-30T17:30:31.098Z',
-    important: true,
+    name: 'Joe',
+    phone: '604-123-4567',
   },
   {
     id: 2,
-    content: 'Browser can execute only Javascript',
-    date: '2019-05-30T18:39:34.091Z',
-    important: false,
+    name: 'Twily',
+    phone: '778-345-1234',
   },
   {
     id: 3,
-    content: 'GET and POST are the most important methods of HTTP protocol',
-    date: '2019-05-30T19:20:14.298Z',
-    important: true,
+    name: 'Mark',
+    phone: '123-098-1468',
   },
 ]
 
 app.get('/', (req, res) => {
-  res.send('<h1>Hello World!</h1>')
+  res.send('<h1>Phone Book App</h1>')
 })
 
-app.get('/api/notes', (req, res) => {
-  res.json(notes)
+app.get('/api/persons', (req, res) => {
+  res.json(persons)
 })
 
-app.get('/api/notes/:id', (req, res) => {
+app.get('/api/info', (req, res) => {
+  res.send(`Phonebook has info for ${persons.length} people<br/><br/>${new Date()}`)
+})
+
+app.get('/api/persons/:id', (req, res) => {
   const id = parseInt(req.params.id)
-  const note = notes.find((note) => note.id === id)
+  const person = persons.find((person) => person.id === id)
 
-  if (note) {
-    res.json(note)
+  if (person) {
+    res.json(person)
   } else {
     res.status(404).end()
   }
 })
 
-app.delete('/api/notes/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
-  notes = notes.filter((note) => note.id !== id)
+  persons = persons.filter((person) => person.id !== id)
 
   res.status(204).end()
 })
 
 const generateId = () => {
-  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0
+  const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0
   return maxId + 1
 }
 
-app.post('/api/notes', (req, res) => {
-  const note = req.body
+app.post('/api/persons', (req, res) => {
+  const person = req.body
 
-  if (!note) {
-    res.status(400).send('Missing note')
+  if (!person) {
+    res.status(400).send('Missing person')
+    return
+  }
+  if (!person.name) {
+    res.status(400).send('Missing name')
+    return
+  }
+  if (!person.phone) {
+    res.status(400).send('Missing phone')
+    return
   }
 
-  // JS witchcraft
-  const id = generateId()
-  const date = new Date()
+  if (persons.find((x) => x.name === person.name)) {
+    res.status(409).send('Name already exists')
+    return
+  }
+  if (persons.find((x) => x.phone === person.phone)) {
+    res.status(409).send('Phone already exists')
+    return
+  }
 
-  notes.concat({ ...note, id, date })
-  res.json(note)
+  person.id = generateId()
+  person.date = new Date()
+
+  persons.push(person)
+  res.json(person)
 })
+
+// After our code to catch non-existant routes
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const port = 3001
 app.listen(port)
